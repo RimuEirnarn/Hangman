@@ -24,7 +24,7 @@ python3 main.py
 
 ### Notice
 
-if you're running on Windows machine, make sure to use other command line program, CMD may have the same bug addressed in [here](https://github.com/RimuEirnarn/PyMarquee) and make sure to replace python3 with py3 and pip3 with py3 -m pip like this (non-venv):
+if you're running on Windows machine, make sure to use other command line program, CMD may have the same bug addressed in [here](https://github.com/RimuEirnarn/PyMarquee#problems--bugs) and make sure to replace python3 with py3 and pip3 with py3 -m pip like this (non-venv):
 
 ```sh
 git clone https://github.com/RimuEirnarn/Hangman
