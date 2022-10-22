@@ -18,6 +18,8 @@ a -> the guessed character
 
 ... or you can just enter a character like: a\n"""
 BANNER = "Welcome to Hangman! (c) 2022 RimuEirnarn\n"
+HINT = (1, 2, 4)
+HINT_FLAG = (3, 7, 15)
 
 
 def custom_input(prompt: str, default: str = "", hook: Optional[Callable[[Any], Union[Any, str]]] = None, fail_hook: Optional[Callable[[Any], tuple[bool, str]]] = None) -> Union[Any, str]:
@@ -78,14 +80,17 @@ def input_hook(data: str) -> tuple[Any, str]:
         return cast(data[0]), data[2]
     return 0, data[0]
 
+
 def padded_print(chrs, data):
     """Print stuff"""
     pd = [1]
     for idx in range(1, len(data)+1):
         pd.append(len(str(idx)))
-    
-    print(" ".join((a or "_"*pd[idx+1])+" "*(pd[idx+1]-1) for idx,a in enumerate(data)))
-    print(" ".join((str(d)+" "*(pd[idx+1]-1) for idx,d in enumerate(range(1, len(data)+1)))))
+
+    print(" ".join((a or "_"*pd[idx+1])+" "*(pd[idx+1]-1)
+          for idx, a in enumerate(data)))
+    print(" ".join((str(d)+" "*(pd[idx+1]-1)
+          for idx, d in enumerate(range(1, len(data)+1)))))
 
 
 @arg("--word-list", help="Word list file to use, default to program's word list path.")
@@ -104,8 +109,23 @@ def main(word_list: Optional[str] = None):
 
     selected: str = choice(words).lower()
     selected_2 = selected
+    sel_hints = HINT[2]
+    if len(selected) <= HINT_FLAG[0]:
+        sel_hints = HINT[0]
+    elif len(selected) <= HINT_FLAG[1]:
+        sel_hints = HINT[1]
+    elif len(selected) <= HINT_FLAG[2]:
+        sel_hints = HINT[2]
     chars.extend((None for _ in selected))
-    print("\033[H\033[2J\033[3J"+(BANNER_ONETIME if not exists(DEFAULT_DATAPATH / "init") else BANNER))
+    passed = []
+    while len(passed) != sel_hints:
+        x = randint(0, len(selected)-1)
+        if x in passed:
+            continue
+        passed.append(x)
+        chars[x] = selected[x]
+    print("\033[H\033[2J\033[3J" +
+          (BANNER_ONETIME if not exists(DEFAULT_DATAPATH / "init") else BANNER))
     with open(DEFAULT_DATAPATH / "init", "w") as f:
         pass
     turns = 0
@@ -143,7 +163,8 @@ def main(word_list: Optional[str] = None):
 
     print("\33[H\033[2J\033[3J", end='')
     padded_print(selected, chars)
-    print(f"Correct word: {selected}\nGuessed totals: {''.join(((a or '_') for a in chars))}")
+    print(
+        f"Correct word: {selected}\nGuessed totals: {''.join(((a or '_') for a in chars))}")
     if condition == True:
         print("\n\033[32mYou've won the game!\033[0m")
     else:
