@@ -103,9 +103,9 @@ def padded_print(data):
         padded.append(len(str(idx)))
 
     print(" ".join((a or "_"*padded[idx+1])+" "*(padded[idx+1]-1)
-          for idx, a in enumerate(data)))
+                   for idx, a in enumerate(data)))
     print(" ".join((str(d)+" "*(padded[idx+1]-1)
-          for idx, d in enumerate(range(1, len(data)+1)))))
+                    for idx, d in enumerate(range(1, len(data)+1)))))
 
 
 @arg("--word-list", help="Word list file to use, default to program's word list path.")
@@ -113,13 +113,13 @@ def main(word_list: Optional[str] = None):
     """A hangman game."""
     if not exists(DEFAULT_WPATH):
         write_csv(str(DEFAULT_WPATH), ("Apple", "Determination",
-                  "Projectile", "Anime", "Mouse", "Cat", "Project"))
+                                       "Projectile", "Anime", "Mouse", "Cat", "Project"))
 
     condition = None
     death = 3
     # Set default data, will be allocated with None (and two helper hints)
     # for the length of randomly selected word.
-    chars: list[Union[None, str]] = []
+    chars: List[Union[None, str]] = []
     words = read_csv(word_list or str(DEFAULT_WPATH))
 
     selected: str = choice(words).lower()
