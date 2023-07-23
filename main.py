@@ -108,6 +108,14 @@ def padded_print(data):
                     for idx, d in enumerate(range(1, len(data)+1)))))
 
 
+def replace_by_index_str(string: str, index: int, with_: str):
+    if len(with_) != 1:
+        raise ValueError("char (1-length string) is allowed")
+    part_1 = string[:index-1]
+    part_2 = string[index:]
+    return part_1 + with_ + part_2
+
+
 @arg("--word-list", help="Word list file to use, default to program's word list path.")
 def main(word_list: Optional[str] = None):
     """A hangman game."""
@@ -144,8 +152,13 @@ def main(word_list: Optional[str] = None):
     with open(DEFAULT_DATAPATH / "init", "w", encoding='utf-8') as file:
         file.write('\0')
     turns = 0
+    for i, j in enumerate(chars):
+        if j is None:
+            continue
+        selected_2 = replace_by_index_str(selected_2, i+1, '_')
     while True:
         # Print current status
+        print(CLEAR + BANNER)
         padded_print(chars)
         print(
             f"You can play until {death} more mistake(s)" if death != 0 else "Game over!", end='')
@@ -157,7 +170,7 @@ def main(word_list: Optional[str] = None):
         if char == '-':
             death -= 1
 
-        if char not in selected and char not in selected_2 and char != '-':
+        if char not in selected_2 or char == '-':
             death -= 1
 
         if char in selected_2:
@@ -176,7 +189,7 @@ def main(word_list: Optional[str] = None):
         turns += 1
         print(CLEAR, end='')
 
-    print(CLEAR, end='')
+    print(CLEAR + BANNER, end='\n')
     padded_print(chars)
     print(
         f"Correct word: {selected}\nGuessed totals: {''.join(((a or '_') for a in chars))}")
